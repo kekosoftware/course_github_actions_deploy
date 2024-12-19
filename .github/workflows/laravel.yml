@@ -6,63 +6,16 @@ on:
       - main
 
 jobs:
-  laravel-test:
+  local-action:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8.0
-        ports:
-          - 3306:3306
-        env:
-          MYSQL_ROOT_PASSWORD: root   # Contraseña para el usuario root de MySQL
-          MYSQL_DATABASE: db_laravel  # Nombre de la base de datos a crear
-          DB_DATABASE: db_laravel     # Para que Laravel lo use
-          DB_USERNAME: root           # Usuario para conectar a la base de datos
-          DB_PASSWORD: root           # Contraseña para conectar a la base de datos
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4.2.2
+      - name: Setup
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" >> ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 3.80.212.92 >> ~/.ssh/known_hosts
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4.1.0
-
-      - name: Set Up PHP
-        uses: shivammathur/setup-php@2.31.1
-        with:
-          php-version: '8.3'
-          extensions: mbstring, bcmath, pdo, pdo-mysql
-      
-      - name: Install packages
-        run: composer install --no-interaction --prefer-dist
-
-      - name: Set App
-        run: cp .env.example .env
-        env:
-            DB_CONNECTION: mysql
-            DB_HOST: 127.0.0.1
-            DB_PORT: 3306
-            DB_DATABASE: db_laravel
-            DB_USERNAME: root
-            DB_PASSWORD: root
-
-      - name: Set Key
-        run: php artisan key:generate
-
-      - name: Run test
-        id: test
-        run: vendor/bin/phpunit
-
-      - name: Deploy
-        if: ${{ steps.test.outcome == 'success' }}
-        run: ls
-
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v4.5.0
-        if: failure()
-        with:
-          name: artifacts
-          path: |
-            storage/logs/laravel.log
-    
+      - name: ls
+        run: ssh ubuntu@3.80.212.92 "ls -al"
