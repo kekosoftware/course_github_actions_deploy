@@ -57,3 +57,10 @@ jobs:
       - name: Deploy
         if: ${{ steps.test.outcome == 'success' }}
         run: ls
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.5.0
+        with:
+          name: artifacts
+          path: composer.json
+    
