@@ -27,4 +27,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SSH_KEY }}
           port: 22
-          script: whoami
+          script: | 
+            whoami
+            cd /home/ubuntu
+            git pull origin main
