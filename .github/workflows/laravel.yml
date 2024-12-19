@@ -18,10 +18,11 @@ jobs:
           ssh-keyscan -H 3.80.212.92 >> ~/.ssh/known_hosts
 
       - name: ls SSH
-        run: ssh ubuntu@3.80.212.92 "ls -al"
+        run: ssh ubuntu@3.80.212.92 "ls ~/.ssh -al"
 
       - name: SSH Remote Commands
         uses: appleboy/ssh-action@v1.2.0
+        if: success()
         with:
           host: 3.80.212.92
           username: ubuntu
