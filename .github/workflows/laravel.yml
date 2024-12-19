@@ -9,28 +9,20 @@ jobs:
   local-action:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        php-version: [7.4, 8.0, 8.1]
+
     steps:
-      - name: Setup
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY }}" >> ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 3.80.212.92 >> ~/.ssh/known_hosts
-          ls ~/.ssh -al
-          git pull origin main
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
 
-      - name: ls SSH
-        run: ssh ubuntu@3.80.212.92 "ls ~/.ssh -al"
-
-      - name: SSH Remote Commands
-        uses: appleboy/ssh-action@v1.2.0
-        if: success()
+      - name: SETUP PHP
+        uses: shivammathur/setup-php@2.31.1
         with:
-          host: 3.80.212.92
-          username: ubuntu
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script: | 
-            whoami
-            cd /home/ubuntu
-            git pull origin main
+          php-version: ${{ matrix.php-version }}
+      
+      - name: Run Script
+        run: | 
+          echo "PHP VERSION ${{ matrix.php-version }}"
+          php -v
