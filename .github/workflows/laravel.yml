@@ -1,0 +1,44 @@
+name: Laravel CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  laravel-test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        ports:
+          - 3306:3306
+        env:
+          DB_DATABASE: db_laravel
+          DB_PASSWORD: root
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4.1.0
+
+      - name: Set Up PHP
+        uses: shivammathur/setup-php@2.31.1
+        with:
+          php-version: '8.3'
+          extensions: mbstring, bcmath, pdo, pdo-mysql
+      
+      - name: Install packages
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Set App
+        run: cp .env.example .env
+
+      - name: Set Key
+        run: php artisan key:generate
+
+      - name: Run test
+        run: vendor/bin/phpunit
