@@ -17,5 +17,14 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 3.80.212.92 >> ~/.ssh/known_hosts
 
-      - name: ls
+      - name: ls SSH
         run: ssh ubuntu@3.80.212.92 "ls -al"
+
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: 3.80.212.92
+          username: ubuntu
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: whoami
