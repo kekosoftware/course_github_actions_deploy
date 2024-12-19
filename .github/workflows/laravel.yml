@@ -17,6 +17,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 3.80.212.92 >> ~/.ssh/known_hosts
           ls ~/.ssh -al
+          git pull origin main
 
       - name: ls SSH
         run: ssh ubuntu@3.80.212.92 "ls ~/.ssh -al"
